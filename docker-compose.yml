@@ -1,0 +1,52 @@
+version: '3'
+
+volumes:
+    profile-postgres-data:
+
+networks:
+    ehp-net:
+        external: true
+
+services:
+    profile_service:
+        image: node:16-alpine
+        working_dir: /usr/app
+        volumes:
+            - ./:/usr/app
+        ports:
+            - 30001:3000
+            - 40001:9229
+        environment:
+            SECRET_KEY_INTERNAL_API_INVENTORY: TDjvmPxeAGDe6vvLVZU0DBRHCBb6HvwiQxoFKYQUeHOPlOCuC9TcVvQTAu9Jtgovq
+            AUTHENTICATION_API_URL: https://ehp-api.cbidigital.com/authentication-svc/api
+            SECRET_KEY_INTERNAL_API_AUTHENTICATION: gUKj7ZUD8cTVYSd1STBtd7yK7y6h1YF8Z8ns4GhO284ZkN1MgA0FcOWBzrq30TmD
+            NPM_TOKEN: ${NPM_TOKEN}
+            DATABASE_HOST: profile_postgres
+            DATABASE_PORT: 5432
+            DATABASE_SCHEMA: dev
+            DATABASE_USER: dev
+            DATABASE_PASSWORD: dev@123
+            POSTGRES_HOST: profile_postgres
+            POSTGRES_PORT: 5432
+            POSTGRES_DATABASE: dev
+            POSTGRES_USER: dev
+            POSTGRES_PASSWORD: dev@123
+        depends_on:
+            - profile_postgres
+        links:
+            - profile_postgres
+        command: sh -c "sleep 3 && yarn migrate:latest && yarn dev"
+        networks:
+            - ehp-net
+
+    profile_postgres:
+        image: postgres
+        environment:
+            POSTGRES_PASSWORD: dev@123
+            POSTGRES_USER: dev
+        ports:
+            - 50001:5432
+        volumes:
+            - profile-postgres-data:/var/lib/postgresql/data
+        networks:
+            - ehp-net

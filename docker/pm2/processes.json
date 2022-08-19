@@ -1,0 +1,16 @@
+{
+    "apps": [
+        {
+            "name": "api",
+            "cwd": "/usr/app/dist",
+            "script": "index.js",
+            "watch": false,
+            "env_development": {
+                "NODE_ENV": "development"
+            },
+            "env_production": {
+                "NODE_ENV": "production"
+            }
+        }
+    ]
+}
